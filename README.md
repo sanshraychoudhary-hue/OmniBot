@@ -16,9 +16,10 @@ This repository contains all the design and source files for OmniServe, organize
 *   **[`UI/`](UI/README.md)**: Web Dashboard HTML/JS files.
 *   **[`simulator_scripts/`](simulator_scripts/README.md)**: Python kinetics simulators.
 *   **[`test_files/`](test_files/README.md)**: Unit tests for individual components.
-*   **[`report/`](report/README.md)**: Full project report, presentation, and research.
+*   **[`report/`](report/README.md)**: Full project report.
 *   **[`assets/`](assets/README.md)**: Images and demonstration videos.
-
+*   **[`research/`](research)**: Images and demonstration videos.
+*   
 ---
 
 ## Features
