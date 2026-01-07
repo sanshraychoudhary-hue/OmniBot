@@ -19,7 +19,7 @@ This repository contains all the design and source files for OmniServe, organize
 *   **[`report/`](report/README.md)**: Full project report.
 *   **[`assets/`](assets/README.md)**: Images and demonstration videos.
 *   **[`research/`](research)**: Images and demonstration videos.
-*   
+ 
 ---
 
 ## Features
