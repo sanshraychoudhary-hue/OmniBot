@@ -16,10 +16,9 @@ This repository contains all the design and source files for OmniServe, organize
 *   **[`UI/`](UI/README.md)**: Web Dashboard HTML/JS files.
 *   **[`simulator_scripts/`](simulator_scripts/README.md)**: Python kinetics simulators.
 *   **[`test_files/`](test_files/README.md)**: Unit tests for individual components.
-*   **[`report/`](report/README.md)**: Full project report.
+*   **[`report/`](report/README.md)**: Full project report, presentation, and research.
 *   **[`assets/`](assets/README.md)**: Images and demonstration videos.
-*   **[`research/`](research)**: Images and demonstration videos.
- 
+
 ---
 
 ## Features
@@ -63,8 +62,10 @@ OmniServe can autonomously navigate narrow aisles, retrieve packages using its r
 *   **Omni-wheels**: 1.5-inch diameter for smooth lateral and diagonal movement.
 
 ### Motors and Drivers
-*   **Motors**: Four DC motors.
-*   **Drivers**: Dual **TB6612FNG** motor drivers for efficient control.
+*   **Motors**: Four DC motors, each with a magnetic quadrature encoder.
+*   **Drivers**: Dual **TB6612FNG** motor drivers are used. Each driver controls two motors.
+    *   **Driver 1 (Front)**: Controls Motor A (Front Left) and Motor B (Front Right).
+    *   **Driver 2 (Rear)**: Controls Motor C (Rear Left) and Motor D (Rear Right).
 
 ### Encoders
 *   **Quadrature encoders** (520 ticks/rev) on each wheel for closed-loop PID control and accurate distance estimation.
@@ -77,14 +78,42 @@ OmniServe can autonomously navigate narrow aisles, retrieve packages using its r
 ### Power Supply
 *   Rechargeable **Li-ion battery pack** with voltage regulation for stable operation of logic and motors.
 
-### GPIO Mapping (Raspberry Pi Pico W)
+### Detailed Connection Diagram (GPIO Mapping)
+
+#### Motor Driver 1 (Front Motors)
+Controls the Front Left and Front Right wheels.
+*   **Standby (STBY)**: GP8 (Shared)
+*   **Channel A (Front Left - Motor A)**
+    *   IN1: GP2
+    *   IN2: GP3
+    *   PWM: GP4
+    *   *Encoder*: A (GP16), B (GP17)
+*   **Channel B (Front Right - Motor B)**
+    *   IN1: GP5
+    *   IN2: GP6
+    *   PWM: GP7
+    *   *Encoder*: A (GP18), B (GP19)
+
+#### Motor Driver 2 (Rear Motors)
+Controls the Rear Left and Rear Right wheels.
+*   **Standby (STBY)**: GP8 (Shared)
+*   **Channel A (Rear Left - Motor C)**
+    *   IN1: GP10
+    *   IN2: GP11
+    *   PWM: GP12
+    *   *Encoder*: A (GP20), B (GP21)
+*   **Channel B (Rear Right - Motor D)**
+    *   IN1: GP13
+    *   IN2: GP14
+    *   PWM: GP15
+    *   *Encoder*: A (GP22), B (GP26)
+
+#### Other Connections
 | Function | Pico W Pin(s) |
 | :--- | :--- |
-| **Motor Control** | GP2-GP15 |
-| **Encoder Inputs** | GP16-GP22, GP26 |
 | **Standby** | GP8 |
 | **Robotic Arm PWM** | GP23, GP24, GP25 (suggested) |
-| **I2C (reserved)** | GP0 (SDA), GP1 (SCL) |
+| **I2C (OLED/MPU)** | GP0 (SDA), GP1 (SCL) |
 
 ### Main Components Summary
 | Module | Description |
