@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OmniServe Bot Dashboard (Local UI Test)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    h2 { margin-top: 18px; font-size: 1.6em; }
+    .btn {
+      width: 60px;
+      height: 40px;
+      font-size: 18px;
+      margin: 4px;
+      border-radius: 6px;
+      border: 2px solid #333;
+      background-color: #fff;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn:hover { background-color: #d0e7ff; }
+    .status { font-weight: bold; font-size: 16px; margin: 8px; }
+    #speedVal { font-weight: bold; }
+    #speedContainer { margin: 0 auto 10px; width: 90%; }
+    #speedSlider { width: 100%; min-width: 120px; max-width: 900px; margin-top: 2px; }
+    .telemetry { font-weight: bold; font-size: 14px; margin: 6px; }
+    #resetBtn { font-size: 12px; padding: 4px 8px; }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr 2fr 1fr;
+      grid-template-areas:
+        "title title title title"
+        ". status status ."
+        "encoders center move move"
+        "speed speed speed speed"
+        "voice voice voice voice"
+        ". dpad pid .";
+      gap: 0px 0px;
+      width: 100vw;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .dashboard-title { grid-area: title; text-align: center; }
+    .dashboard-status { grid-area: status; text-align: center; }
+    .dashboard-encoders { grid-area: encoders; text-align: left; display: flex; flex-direction: column; align-items: flex-start; margin-left: 10px; }
+    .dashboard-center { grid-area: center; text-align: left; display: flex; flex-direction: column; align-items: flex-start; }
+    .dashboard-move { grid-area: move; display: flex; flex-direction: row; gap: 16px; justify-content: flex-start; }
+    .dashboard-speed { grid-area: speed; text-align: center; margin-top: 8px; }
+    .dashboard-dpad { grid-area: dpad; display: flex; flex-direction: column; align-items: center; }
+    .dashboard-pid { grid-area: pid; display: flex; flex-direction: column; align-items: flex-end; }
+    .dashboard-voice { grid-area: voice; text-align: center; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 10px; }
+    .panel-box {
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      padding: 10px;
+      min-width: 170px;
+      max-width: 210px;
+      box-sizing: border-box;
+      background: #fff;
+      margin-bottom: 4px;
+    }
+    .pid-panel-box {
+      min-width: 210px;
+      max-width: 250px;
+    }
+    .dpad-block { margin-bottom: 10px; }
+    .control-grid { display: inline-block; margin-top: 0; }
+    .rotation-buttons { margin-top: 6px; }
+    #joystick {
+      width: 180px;
+      height: 180px;
+      margin: 30px auto 10px auto;
+      position: fixed;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    table { font-size: 13px; }
+    input[type="number"] { width: 45px; font-size: 13px; }
+    .encoder-info {
+      font-size: 12px;
+      color: #222;
+      margin-bottom: 2px;
+    }
+    .center-info {
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 2px;
+    }
+    .center-info-secondary {
+      font-size: 12px;
+      color: #444;
+      margin-bottom: 2px;
+    }
+    #resetEncBtn, #resetBtn {
+      font-size: 11px !important;
+      padding: 2px 6px !important;
+      height: 26px !important;
+      min-width: 70px;
+    }
+    .set-pid-btn {
+      font-size: 12px !important;
+      padding: 3px 10px !important;
+      margin-top: 8px;
+    }
+     #micBtn {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        border-radius: 50%;
+        border: 2px solid #333;
+        background-color: #fff;
+        cursor: pointer;
+    }
+    #micBtn.recording {
+        background-color: #ff4136; /* Red when recording */
+        border-color: #a00;
+        color: white;
+    }
+    #voiceCommandBox {
+        width: 250px;
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    @media (max-width: 1100px) {
+      .dashboard-grid { grid-template-columns: 1fr 2fr 2fr 1fr; max-width: 100vw; }
+      #joystick { width: 140px; height: 140px; }
+    }
+    @media (max-width: 900px) {
+      .dashboard-grid { grid-template-columns: 1fr; grid-template-areas: "title" "status" "encoders" "center" "move" "speed" "voice" "dpad" "pid"; }
+      #joystick { position: static; margin: 20px auto 10px auto; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-grid">
+    <div class="dashboard-title">
+      <h2>OmniServe Bot Dashboard (Local UI Test)</h2>
+    </div>
+    <div class="dashboard-status">
+      <span id="status">Status: Demo | Speed: 200</span>
+    </div>
+    <div class="dashboard-encoders">
+      <button class="btn" id="resetEncBtn">Reset Encoders</button>
+      <span class="encoder-info">FL: <span id="fl">0</span> | FR: <span id="fr">0</span></span>
+      <span class="encoder-info">RL: <span id="rl">0</span> | RR: <span id="rr">0</span></span>
+    </div>
+    <div class="dashboard-center">
+      <button class="btn" id="resetBtn">Reset Distance</button>
+      <span class="center-info">Joystick Angle: <span id="angleVal">0</span>° | PWM: <span id="pwmVal">0</span> | Distance: <span id="distanceVal">0.00</span> cm</span>
+      <span class="center-info-secondary"><strong>Accel</strong> X: <span id="ax">0</span> | Y: <span id="ay">0</span> | Z: <span id="az">0</span></span>
+      <span class="center-info-secondary"><strong>Gyro</strong> X: <span id="gx">0</span> | Y: <span id="gy">0</span> | Z: <span id="gz">0</span></span>
+    </div>
+    <div class="dashboard-move">
+      <div class="telemetry panel-box">
+        <h4>Move by r, θ</h4>
+        Distance (cm): <input id="rIn" type="number" value="10"> <br>
+        Angle (°): <input id="thetaIn" type="number" value="0"> <br>
+        <button class="btn" onclick="startMoveRT()">Start</button>
+        <button class="btn" onclick="stopMove()">Stop</button>
+      </div>
+      <div class="telemetry panel-box">
+        <h4>Move to (x, y)</h4>
+        X (cm): <input id="xIn" type="number" value="10"> <br>
+        Y (cm): <input id="yIn" type="number" value="0"> <br>
+        <button class="btn" onclick="startMoveXY()">Start</button>
+        <button class="btn" onclick="stopMove()">Stop</button>
+      </div>
+    </div>
+    <div class="dashboard-speed">
+      <span style="font-weight:bold;">Speed: <span id="speedVal">200</span></span>
+      <input type="range" min="0" max="255" value="200" id="speedSlider" />
+    </div>
+    <div class="dashboard-dpad">
+      <div class="dpad-block">
+        <div class="control-grid">
+          <div>
+            <button class="btn" id="btnFL">↖</button>
+            <button class="btn" id="btnF">↑</button>
+            <button class="btn" id="btnFR">↗</button>
+          </div>
+          <div>
+            <button class="btn" id="btnL">←</button>
+            <button class="btn" id="btnS">●</button>
+            <button class="btn" id="btnR">→</button>
+          </div>
+          <div>
+            <button class="btn" id="btnBL">↙</button>
+            <button class="btn" id="btnB">↓</button>
+            <button class="btn" id="btnBR">↘</button>
+          </div>
+        </div>
+        <div class="rotation-buttons">
+          <button class="btn" id="btnCCW">⟲</button>
+          <button class="btn" id="btnCW">⟳</button>
+        </div>
+      </div>
+    </div>
+    <div class="dashboard-pid">
+      <div class="telemetry panel-box pid-panel-box">
+        <h4>Per-Wheel PID Tuning</h4>
+        <table style="margin: 0 auto;">
+          <tr><th></th><th>Kp</th><th>Ki</th><th>Kd</th></tr>
+          <tr>
+            <td>FL</td>
+            <td><input id="kpFL" type="number" value="1.0" step="0.01"></td>
+            <td><input id="kiFL" type="number" value="0.0" step="0.01"></td>
+            <td><input id="kdFL" type="number" value="0.0" step="0.01"></td>
+          </tr>
+          <tr>
+            <td>FR</td>
+            <td><input id="kpFR" type="number" value="1.0" step="0.01"></td>
+            <td><input id="kiFR" type="number" value="0.0" step="0.01"></td>
+            <td><input id="kdFR" type="number" value="0.0" step="0.01"></td>
+          </tr>
+          <tr>
+            <td>RL</td>
+            <td><input id="kpRL" type="number" value="1.0" step="0.01"></td>
+            <td><input id="kiRL" type="number" value="0.0" step="0.01"></td>
+            <td><input id="kdRL" type="number" value="0.0" step="0.01"></td>
+          </tr>
+          <tr>
+            <td>RR</td>
+            <td><input id="kpRR" type="number" value="1.0" step="0.01"></td>
+            <td><input id="kiRR" type="number" value="0.0" step="0.01"></td>
+            <td><input id="kdRR" type="number" value="0.0" step="0.01"></td>
+          </tr>
+        </table>
+        <button class="btn set-pid-btn" onclick="setAllPID()">Set All PID</button>
+      </div>
+    </div>
+    <div class="dashboard-voice">
+      <button id="micBtn">🎤</button>
+      <input type="text" id="voiceCommandBox" placeholder="Voice command will appear here..." readonly>
+    </div>
+  </div>
+  <!-- Joystick at bottom center -->
+  <div id="joystick"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.9.0/nipplejs.min.js"></script>
+  <script>
+    // Demo logic for local UI testing (no real backend)
+    let lastAngle = 0;
+    let lastForce = 0;
+    let lastJoystickTime = Date.now();
+    const joystick = nipplejs.create({
+      zone: document.getElementById("joystick"),
+      mode: "static",
+      position: { left: '50%', top: '50%' },
+      color: "blue",
+      size: 300
+    });
+    joystick.on("move", (evt, data) => {
+      if (!data || !data.angle || !data.force) return;
+      if (data.force < 0.2) {
+        document.getElementById("angleVal").innerText = 0;
+        document.getElementById("pwmVal").innerText = 0;
+        return;
+      }
+      let angle = Math.round(data.angle.degree);
+      let adjustedAngle = (angle + 270) % 360;
+      let force = Math.min(Math.max(data.force, 0), 1);
+      let pwm = Math.round(force * 255);
+      if (Math.abs(adjustedAngle - lastAngle) > 1 || Math.abs(force - lastForce) > 0.05) {
+        document.getElementById("angleVal").innerText = adjustedAngle;
+        document.getElementById("pwmVal").innerText = pwm;
+        lastAngle = adjustedAngle;
+        lastForce = force;
+        lastJoystickTime = Date.now();
+      }
+    });
+    joystick.on("end", () => {
+      document.getElementById("angleVal").innerText = 0;
+      document.getElementById("pwmVal").innerText = 0;
+    });
+    // Demo: Simulate status updates
+    setInterval(() => {
+      document.getElementById("status").innerText = "Status: Demo | Speed: " + document.getElementById("speedVal").innerText;
+      document.getElementById("fl").innerText = Math.floor(Math.random()*10000-5000);
+      document.getElementById("fr").innerText = Math.floor(Math.random()*10000-5000);
+      document.getElementById("rl").innerText = Math.floor(Math.random()*10000-5000);
+      document.getElementById("rr").innerText = Math.floor(Math.random()*10000-5000);
+      document.getElementById("ax").innerText = (Math.random()*2-1).toFixed(2);
+      document.getElementById("ay").innerText = (Math.random()*2-1).toFixed(2);
+      document.getElementById("az").innerText = (Math.random()*12).toFixed(2);
+      document.getElementById("gx").innerText = (Math.random()*0.1-0.05).toFixed(2);
+      document.getElementById("gy").innerText = (Math.random()*0.1-0.05).toFixed(2);
+      document.getElementById("gz").innerText = (Math.random()*0.1-0.05).toFixed(2);
+      document.getElementById("distanceVal").innerText = (Math.random()*200-100).toFixed(2);
+    }, 1000);
+    document.getElementById('speedSlider').addEventListener('input', function() {
+      document.getElementById('speedVal').innerText = this.value;
+    });
+    document.getElementById('resetBtn').addEventListener('click', function() {
+      document.getElementById('distanceVal').innerText = '0.00';
+    });
+    document.getElementById('resetEncBtn').addEventListener('click', function() {
+      document.getElementById('fl').innerText = 0;
+      document.getElementById('fr').innerText = 0;
+      document.getElementById('rl').innerText = 0;
+      document.getElementById('rr').innerText = 0;
+    });
+
+    // --- Voice Command Logic ---
+    const micBtn = document.getElementById('micBtn');
+    const voiceCommandBox = document.getElementById('voiceCommandBox');
+    
+    // Check for browser support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false; // Process single commands
+      recognition.lang = 'en-US';
+      recognition.interimResults = true;
+
+      micBtn.addEventListener('click', () => {
+        if (micBtn.classList.contains('recording')) {
+          recognition.stop();
+        } else {
+          recognition.start();
+        }
+      });
+
+      recognition.onstart = () => {
+        micBtn.classList.add('recording');
+        voiceCommandBox.value = 'Listening...';
+      };
+
+      recognition.onend = () => {
+        micBtn.classList.remove('recording');
+      };
+
+      recognition.onerror = (event) => {
+        voiceCommandBox.value = 'Error: ' + event.error;
+        micBtn.classList.remove('recording');
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .map(result => result[0])
+          .map(result => result.transcript)
+          .join('');
+        
+        voiceCommandBox.value = transcript;
+
+        if (event.results[0].isFinal) {
+          processVoiceCommand(transcript);
+        }
+      };
+
+    } else {
+      micBtn.disabled = true;
+      voiceCommandBox.value = 'Speech recognition not supported.';
+    }
+
+    function processVoiceCommand(command) {
+      const lowerCaseCommand = command.toLowerCase().trim();
+      let cmdToSend = null;
+
+      // Basic command mapping
+      if (lowerCaseCommand.includes('forward')) {
+        cmdToSend = 'F';
+      } else if (lowerCaseCommand.includes('backward') || lowerCaseCommand.includes('back')) {
+        cmdToSend = 'B';
+      } else if (lowerCaseCommand.includes('left')) {
+        cmdToSend = 'L';
+      } else if (lowerCaseCommand.includes('right')) {
+        cmdToSend = 'R';
+      } else if (lowerCaseCommand.includes('stop')) {
+        cmdToSend = 'S';
+      } else if (lowerCaseCommand.includes('rotate left') || lowerCaseCommand.includes('counter clockwise')) {
+        cmdToSend = 'Q';
+      } else if (lowerCaseCommand.includes('rotate right') || lowerCaseCommand.includes('clockwise')) {
+        cmdToSend = 'E';
+      }
+      // Add more commands here as needed
+
+      if (cmdToSend) {
+        console.log(`Sending voice command: ${lowerCaseCommand} -> ${cmdToSend}`);
+        // This is where you would send the command over the WebSocket
+        // For demo, we'll just log it. In the real code, you'd use your WebSocket instance.
+        // For example: ws.send(cmdToSend); 
+        voiceCommandBox.value = `Sent: ${cmdToSend}`;
+      } else {
+        voiceCommandBox.value = `Unknown command: "${lowerCaseCommand}"`;
+      }
+    }
+  </script>
+</body>
+</html>

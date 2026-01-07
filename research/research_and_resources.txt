@@ -1,0 +1,64 @@
+### Deep Dive: The Role of Paras & Divyansh (Research, Design & Documentation)
+
+As the Research, Design, and Documentation team, Paras and Divyansh are the intellectual backbone of the project. Their role is not just to write the final report, but to inject academic rigor and informed design choices into every stage. They act as internal consultants to the rest of the team, providing the "why" behind the "how."
+
+**Key Responsibilities & Thought Process:**
+
+1.  **Initial Research & Feasibility:** Before a single part is ordered, they would dive into the fundamentals. Their goal is to answer: "What is the best way to build an omni-directional robot for our specific goals?" This involves:
+    *   **Understanding Locomotion:** Studying the difference between mecanum wheels and omni-wheels. They would analyze the pros and cons related to stability, control complexity, and cost.
+    *   **Kinematic Modeling:** Researching the mathematical models that describe how the robot moves. They would need to understand how to translate a desired velocity vector `(vx, vy, ω)` into individual wheel speeds.
+    *   **Component Analysis:** Researching the best motors (DC with encoders vs. steppers), motor drivers (L298N vs. more advanced drivers), and sensors for the task, considering torque requirements, precision, and cost.
+
+2.  **Arm Kinematics:** A significant part of their role would be tackling the 3-DOF arm.
+    *   **Forward Kinematics:** "If we set the joint angles to (θ1, θ2, θ3), where will the gripper end up in 3D space?" They would derive the equations for this first.
+    *   **Inverse Kinematics (The Hard Part):** "To place the gripper at a specific `(x, y, z)` coordinate, what do the joint angles (θ1, θ2, θ3) need to be?" This is a non-trivial problem that requires trigonometry and geometry, and they would research common solution methods for this type of arm.
+
+3.  **Continuous Documentation & Reporting:**
+    *   They act as historians for the project, documenting design decisions, challenges, and solutions as they happen.
+    *   They would be responsible for creating clear diagrams, taking photos/videos of the build process, and maintaining a structured log of progress, which all feeds into the final report and presentation.
+
+---
+
+### Ideal Research & Learning Resources
+
+Here is a curated list of resources Paras and Divyansh would have used to build their expertise.
+
+#### Topic 1: Omni-Directional Drive Systems
+
+*   **YouTube Videos (Conceptual Understanding):**
+    *   **James Bruton - How Omni Wheels Work:** A practical and visual explanation from a highly respected robot builder.
+        *   Link: https://www.youtube.com/watch?v=kBBs2_k5Q-M
+    *   **Intro to Holonomic Drive (Mecanum & Omni):** Provides a clear, animated breakdown of the physics and vectors involved.
+        *   Link: https://www.youtube.com/watch?v=2AAv8n52t3A
+
+*   **Web Articles & Tutorials (The Math & Implementation):**
+    *   **"Designing an Omni-Directional Robot" on RobotShop:** A comprehensive article covering kinematics for 3-wheel and 4-wheel platforms. The math is laid out very clearly.
+        *   Link: https://www.robotshop.com/community/blog/show/designing-an-omni-directional-robot
+    *   **Toptal - "Introduction to Mobile Robot Kinematics":** A more advanced tutorial that dives deep into the control matrices for omni-directional robots.
+        *   Link: https://www.toptal.com/robotics/mobile-robot-kinematics
+
+*   **Research Paper (Academic Foundation):**
+    *   **"Kinematics and Dynamics of a Three-Wheeled Omnidirectional Mobile Robot"**: A classic paper that details the full dynamic modeling. This is for when they need to understand the forces at play, not just the motion.
+        *   Link: https://www.researchgate.net/publication/224376511_Kinematics_and_dynamics_of_a_three-wheeled_omnidirectional_mobile_robot
+
+#### Topic 2: 3-DOF Robotic Arm Inverse Kinematics
+
+*   **YouTube Videos (Visualizing the Geometry):**
+    *   **"Robotics 101: Inverse Kinematics":** A fantastic conceptual overview that explains *what* inverse kinematics is and why it's challenging.
+        *   Link: https://www.youtube.com/watch?v=m43a1p5d8b4
+    *   **"Inverse Kinematics of a 2-DOF Robotic Arm (The Math)":** A perfect starting point. It works through the trigonometry for a simpler 2-joint arm, which is the foundation for solving a 3-joint arm.
+        *   Link: https://www.youtube.com/watch?v=RH3iAmM-2e8
+
+*   **Web Articles & Tutorials (The Solution):**
+    *   **"Inverse Kinematics for a 3-DOF Robotic Arm" - OSRF:** A step-by-step tutorial on solving the IK for a planar 3-DOF arm, exactly the kind of problem they face.
+        *   Link: https://automaticaddison.com/inverse-kinematics-for-a-3-dof-robotic-arm/
+    *   **"Robotic Arm Kinematics" - University of Washington:** A university course note PDF that provides a more formal, academic derivation of the equations.
+        *   Link: https://courses.cs.washington.edu/courses/cse490r/19au/lectures/kinematics-and-control.pdf
+
+#### Topic 3: Motor Selection & General Hardware
+
+*   **Web Articles:**
+    *   **"How to Select a Motor" - RobotShop:** A practical guide covering torque, speed, and the differences between motor types for robotics projects.
+        *   Link: https://www.robotshop.com/community/blog/show/how-to-select-a-motor-for-your-robot
+    *   **"Motor Selection Guide for Mobile Robots" - Acroname:** A more engineering-focused guide that introduces concepts like torque-speed curves and efficiency.
+        *   Link: https://acroname.com/blog/motor-selection-guide-mobile-robots
