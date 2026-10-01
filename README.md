@@ -264,3 +264,6 @@ Successful pick-and-place for up to **200g** objects; repeatability within **2 m
 *   **Sanshray Choudhary**
 
 *University School of Information, Communication & Technology (USIC&T), GGSIPU.*
+
+<img width="800" height="460" alt="image" src="https://github.com/user-attachments/assets/779b9bac-039e-4d94-93d3-cb716c0ca839" />
+
